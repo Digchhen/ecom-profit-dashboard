@@ -34,12 +34,17 @@ if "logged_in" not in st.session_state:
 # ==========================================================
 def get_db_connection():
     try:
+        # Cleanly strip 'https://' from the URL to extract the correct hostname
+        raw_url = st.secrets["SUPABASE_URL"]
+        clean_host = raw_url.replace("https://", "").replace("http://", "").split("/")[0]
+
         conn = psycopg2.connect(
-            host="db.qurlcswocgjcuvhdcbze.supabase.co",
+            host=clean_host,
             user="postgres",
-            password="Digchhen2001@",
-            port=5432,
-            database="postgres"
+            password=st.secrets["SUPABASE_PASSWORD"],
+            port=6543,
+            database="postgres",
+            sslmode="require"
         )
         return conn
     except Exception as db_error:
