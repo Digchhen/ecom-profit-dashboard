@@ -35,12 +35,12 @@ if "logged_in" not in st.session_state:
 def get_db_connection():
     try:
         import psycopg2
+        # Directly pass the complete, unified URI string from secrets
         conn = psycopg2.connect(st.secrets["DATABASE_URL"])
         return conn
     except Exception as db_error:
         st.error(f"Supabase Connection Error: {db_error}")
         return None
-
 # ==========================================================
 # 4. THE PROTECTED APP GATE
 # ==========================================================
