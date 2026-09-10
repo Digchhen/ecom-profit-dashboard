@@ -213,9 +213,9 @@ def render_testing_sidebar_tools():
     st.sidebar.markdown("### 🛠️ Testing Tools")
     messy_df = pd.DataFrame({
         'Transaction_Date': pd.date_range(start='2026-08-01', periods=10),
-        'Cash_Inflow':,
-        'Promo_Budget':,
-        'Fixed_Fees': [2000, 2200, 1800, 2500, 2100, 2800, 1900, 2300, 2400, 2200]
+        'Cash_Inflow': [10000, 12000, 11000, 15000, 13000, 16000, 14000, 17000, 18000, 16500],
+        'Promo_Budget': [3000, 3500, 3200, 4000, 3800, 4200, 3900, 4500, 4800, 4300],
+        'Fixed_Fees': [200000, 220000, 180000, 2500, 2100, 2800, 190000, 2300, 2400, 2200]
     })
 
     def make_buffer(dataframe):
