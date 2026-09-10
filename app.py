@@ -35,8 +35,8 @@ if "logged_in" not in st.session_state:
 def get_db_connection():
     try:
         conn = psycopg2.connect(
-            host="db.qurlcswocgjcuvhdcbze.supabase.co",
-            user="postgres",
+            host="aws-0-ap-south-1.pooler.supabase.com",  # 👈 Make sure there is NO ":// " here
+            user="postgres.qurlscwocgjvchcbzbee",
             password="Digchhen2001@",
             port=5432,
             database="postgres"
