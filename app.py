@@ -34,9 +34,13 @@ if "logged_in" not in st.session_state:
 # ==========================================================
 def get_db_connection():
     try:
-        import psycopg2
-        # Directly pass the complete, unified URI string from secrets
-        conn = psycopg2.connect(st.secrets["DATABASE_URL"])
+        conn = psycopg2.connect(
+            host="db.qurlcswocgjcuvhdcbze.supabase.co",
+            user="postgres",
+            password="Digchhen2001@",
+            port=5432,
+            database="postgres"
+        )
         return conn
     except Exception as db_error:
         st.error(f"Supabase Connection Error: {db_error}")
