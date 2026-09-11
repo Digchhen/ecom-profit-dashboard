@@ -440,6 +440,21 @@ else:
             'cogs': [800 + i*40 for i in range(20)]
         })
         
+        # 1. Run the auto-calculation logic right before computing metrics
+        demo_df = auto_calculate_gross_revenue(demo_df)
+        
+        # # 2. Compute Core Financial Metrics
+        # Change this line to use the new calculated column:
+        total_rev = float(demo_df['Gross_Revenue_Calculated'].sum())
+        
+        # Keep these exactly the same as your original code:
+        total_ad = float(demo_df['spend'].sum())
+        total_costs = float(demo_df['cogs'].sum())
+        
+        net_profit = total_rev - total_ad - total_costs
+        margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
+        roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+        
         # 2. Compute Core Financial Metrics
         total_rev = float(demo_df['revenue'].sum())
         total_ad = float(demo_df['spend'].sum())
