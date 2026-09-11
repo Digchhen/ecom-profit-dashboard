@@ -432,17 +432,78 @@ else:
             st.rerun()
         st.divider()
         
-       # 20-row sample dataset
-        demo_dataset = pd.DataFrame({
+       # 1. Generate Sandbox Dataset
+        demo_df = pd.DataFrame({
             'Transaction_Date': pd.date_range(start='2026-09-01', periods=20),
             'revenue': [5000 + i*300 for i in range(20)],
             'spend': [1200 + i*80 for i in range(20)],
             'cogs': [800 + i*40 for i in range(20)]
         })
         
-        # This draws the charts and metrics automatically for the sandbox view
-        net_profit, margin = render_core_dashboard(demo_dataset, is_demo_mode=True)
+        # 2. Compute Core Financial Metrics
+        total_rev = float(demo_df['revenue'].sum())
+        total_ad = float(demo_df['spend'].sum())
+        total_costs = float(demo_df['cogs'].sum())
         
+        net_profit = total_rev - total_ad - total_costs
+        margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
+        roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+        
+        # 3. Render Key Indicator Metrics Grid
+        st.subheader("🔑 Key Metrics (Sandbox Data)")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Net Profit", f"${net_profit:,.2f}")
+        c2.metric("Profit Margin", f"{margin:.2f}%")
+        c3.metric("ROAS", f"{roas:.2f}x")
+        
+        st.markdown("---")
+        st.subheader("📊 Expense vs Revenue Breakdown")
+        
+        financial_data = {
+            'Category': ['Net Profit', 'Ad Spend', 'Other Costs'],
+            'Amount': [max(0.0, net_profit), total_ad, total_costs]
+        }
+        
+        profit_color = '#2ec4b6' if net_profit >= 0 else '#e63946'
+        
+        # 4. Generate Interactive Donut Graph Layout
+        fig = px.pie(
+            financial_data, 
+            values='Amount', 
+            names='Category', 
+            hole=0.65,  
+            color='Category',
+            color_discrete_map={
+                'Other Costs': '#4361ee', 
+                'Ad Spend': '#7209b7', 
+                'Net Profit': profit_color
+            }
+        )
+        
+        fig.update_traces(
+            textinfo='label+percent',
+            textposition='outside', 
+            textfont=dict(size=13, family="Arial")
+        )
+        
+        fig.update_layout(
+            showlegend=False,
+            margin=dict(t=30, b=20, l=20, r=20),
+            paper_bgcolor='rgba(0,0,0,0)',  
+            plot_bgcolor='rgba(0,0,0,0)',
+            annotations=[
+                dict(
+                    text=f"<span style='font-size:11px; color:#6c757d;'>NET PROFIT</span><br><b style='font-size:22px; color:{profit_color};'>${net_profit:,.2f}</b>",
+                    x=0.5, y=0.5,
+                    showarrow=False,
+                    align="center"
+                )
+            ]
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        st.write("")
         if st.button("⬅️ Back to Home"):
             st.session_state.app_stage = "landing"
             st.rerun()
