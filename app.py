@@ -455,9 +455,17 @@ else:
         margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
         roas = total_rev / total_ad if total_ad > 0.0 else 0.0
         
-        # 2. Compute Core Financial Metrics
-        total_rev = float(demo_df['revenue'].sum())
-        total_ad = float(demo_df['spend'].sum())
+        # # 2. Compute Core Financial Metrics
+        if rev_col == "None":
+            total_rev = 0.0
+        else:
+            total_rev = float(demo_df[rev_col].sum())
+    
+        if ad_col == "None":
+            total_ad = 0.0
+        else:
+            total_ad = float(demo_df[ad_col].sum())
+    
         total_costs = float(demo_df['cogs'].sum())
         
         net_profit = total_rev - total_ad - total_costs
