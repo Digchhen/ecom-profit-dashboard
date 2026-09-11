@@ -448,7 +448,7 @@ else:
 
     elif st.session_state.app_stage == "auth":
         col1, col2, col3 = st.columns(3)
-                with col2:
+        with col2:
                     st.write("")
                     st.markdown("<h2 style='text-align: center;'>🔐 Dashboard Portal</h2>", unsafe_allow_html=True)
                     
@@ -506,3 +506,4 @@ else:
                     if st.button("⬅️ Return to Landing Page", use_container_width=True):
                        st.session_state.app_stage = "landing"
                        st.rerun()
+        
