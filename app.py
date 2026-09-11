@@ -178,7 +178,7 @@ if st.session_state.logged_in:
             st.sidebar.markdown("### 🗺️ Column Mapping Settings")
             
             adjust_manually = st.sidebar.checkbox("🔧 Adjust Columns Manually", value=True)
-            columns_list = list(df.columns)
+            columns_list = ["None"] + list(df.columns)
             
             rev_keywords = ['revenue', 'total', 'subtotal', 'gross sales', 'net sales', 'sales', 'amount', 'price', 'income', 'turnover', 'rev','cash_inflow','net revenue','gross revenue calculated']
             ad_keywords = ['spend', 'ad spend', 'amount spent', 'cost', 'google cost', 'meta spend', 'facebook spend', 'clicks cost', 'ad_spend', 'ad','promo_budget']
