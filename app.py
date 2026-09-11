@@ -432,16 +432,17 @@ else:
             st.rerun()
         st.divider()
         
-        # 20-row sample dataset
+       # 20-row sample dataset
         demo_dataset = pd.DataFrame({
             'Transaction_Date': pd.date_range(start='2026-09-01', periods=20),
-            'Cash_Inflow': [5000 + i*300 for i in range(20)],
-            'Promo_Budget': [1200 + i*80 for i in range(20)],
-            'Fixed_Fees': [800 + i*40 for i in range(20)]
+            'revenue': [5000 + i*300 for i in range(20)],
+            'spend': [1200 + i*80 for i in range(20)],
+            'cogs': [800 + i*40 for i in range(20)]
         })
         
-        # Call your core dashboard function here
-        st.info("📊 Testing calculations active. Switch to the portal view to submit your own file layout.")
+        # This draws the charts and metrics automatically for the sandbox view
+        net_profit, margin = render_core_dashboard(demo_dataset, is_demo_mode=True)
+        
         if st.button("⬅️ Back to Home"):
             st.session_state.app_stage = "landing"
             st.rerun()
