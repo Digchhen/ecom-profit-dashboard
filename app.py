@@ -28,7 +28,8 @@ supabase = init_supabase()
 # Tracks whether the user session is currently verified
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-
+if "app_stage" not in st.session_state:
+    st.session_state.app_stage = "landing"
 # ==========================================================
 # 3. DATABASE CONFIGURATION (PARAMETERS FIX FOR SPECIAL CHARACTERS)
 # ==========================================================
@@ -410,58 +411,98 @@ if st.session_state.logged_in:
 # 5. THE LOGIN SCREEN (FALLBACK ACCESS WITH SIGN-UP)
 # ==========================================================
 else:
-    col1, col2, col3 = st.columns(3)
-    with col2:
-        st.write("")
-        st.markdown("<h2 style='text-align: center;'>🔐 Dashboard Portal</h2>", unsafe_allow_html=True)
+    if st.session_state.app_stage == "landing":
+        st.title("🚀 Stop Guessing Your E-commerce Margins")
+        st.subheader("Instantly calculate net profits from your store data logs without linking risky live API endpoints.")
+        st.write(" ")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✨ View Live Sandbox (No Sign Up Needed)", use_container_width=True, type="primary"):
+                st.session_state.app_stage = "demo"
+                st.rerun()
+        with col2:
+            if st.button("🔑 Account Member Access Portal / Upload CSV Direct", use_container_width=True):
+                st.session_state.app_stage = "auth"
+                st.rerun()
+
+    elif st.session_state.app_stage == "demo":
+        st.warning("⚡ Currently running in Sandbox Mode using sample row frameworks. Want to run calculations on your real store numbers?")
+        if st.button("👉 Register Private Account & Open File Dropper", type="primary"):
+            st.session_state.app_stage = "auth"
+            st.rerun()
+        st.divider()
         
-        # Creates two clickable tabs for users
-        auth_tab, signup_tab = st.tabs(["🔒 Sign In", "📝 Create Account"])
+        # 20-row sample dataset
+        demo_dataset = pd.DataFrame({
+            'Transaction_Date': pd.date_range(start='2026-09-01', periods=20),
+            'Cash_Inflow': [5000 + i*300 for i in range(20)],
+            'Promo_Budget': [1200 + i*80 for i in range(20)],
+            'Fixed_Fees': [800 + i*40 for i in range(20)]
+        })
         
-        # --- TAB 1: LOG IN ---
-        with auth_tab:
-            st.write("Sign in with your credentials to unlock application metrics.")
-            with st.form("login_form"):
-                email = st.text_input("Email Address", placeholder="name@example.com")
-                password = st.text_input("Password", type="password", placeholder="••••••••")
-                submit = st.form_submit_button("Sign In", use_container_width=True)
+        # Call your core dashboard function here
+        st.info("📊 Testing calculations active. Switch to the portal view to submit your own file layout.")
+        if st.button("⬅️ Back to Home"):
+            st.session_state.app_stage = "landing"
+            st.rerun()
 
-                if submit:
-                    if email and password:
-                        try:
-                            response = supabase.auth.sign_in_with_password({
-                                "email": email.strip(),
-                                "password": password
-                            })
-                            st.session_state.logged_in = True
-                            st.success("Access Granted! Loading your dashboard...")
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Authentication Failed: {e}")
-                    else:
-                        st.warning("Please fill in both fields.")
-
-        # --- TAB 2: SELF-SERVICE SIGN UP ---
-        with signup_tab:
-            st.write("Create a new user account to access the system.")
-            with st.form("signup_form"):
-                new_email = st.text_input("New Email Address", placeholder="user@example.com")
-                new_password = st.text_input("Choose Password", type="password", placeholder="Minimum 6 characters")
-                signup_submit = st.form_submit_button("Register Account", use_container_width=True)
-
-                if signup_submit:
-                    if new_email and new_password:
-                        if len(new_password) < 6:
-                            st.error("❌ Password must be at least 6 characters long.")
-                        else:
-                            try:
-                                # Registers the user directly into your Supabase database
-                                response = supabase.auth.sign_up({
-                                    "email": new_email.strip(),
-                                    "password": new_password
-                                })
-                                st.success("🎉 Account created successfully! You can now switch to the 'Sign In' tab and log in.")
-                            except Exception as e:
-                                st.error(f"Registration Failed: {e}")
-                    else:
-                        st.warning("Please fill in both fields.")
+    elif st.session_state.app_stage == "auth":
+        col1, col2, col3 = st.columns(3)
+                with col2:
+                    st.write("")
+                    st.markdown("<h2 style='text-align: center;'>🔐 Dashboard Portal</h2>", unsafe_allow_html=True)
+                    
+                    # Creates two clickable tabs for users
+                    auth_tab, signup_tab = st.tabs(["🔒 Sign In", "📝 Create Account"])
+                    
+                    # --- TAB 1: LOG IN ---
+                    with auth_tab:
+                        st.write("Sign in with your credentials to unlock application metrics.")
+                        with st.form("login_form"):
+                            email = st.text_input("Email Address", placeholder="name@example.com")
+                            password = st.text_input("Password", type="password", placeholder="••••••••")
+                            submit = st.form_submit_button("Sign In", use_container_width=True)
+            
+                            if submit:
+                                if email and password:
+                                    try:
+                                        response = supabase.auth.sign_in_with_password({
+                                            "email": email.strip(),
+                                            "password": password
+                                        })
+                                        st.session_state.logged_in = True
+                                        st.success("Access Granted! Loading your dashboard...")
+                                        st.rerun()
+                                    except Exception as e:
+                                        st.error(f"Authentication Failed: {e}")
+                                else:
+                                    st.warning("Please fill in both fields.")
+            
+                    # --- TAB 2: SELF-SERVICE SIGN UP ---
+                    with signup_tab:
+                        st.write("Create a new user account to access the system.")
+                        with st.form("signup_form"):
+                            new_email = st.text_input("New Email Address", placeholder="user@example.com")
+                            new_password = st.text_input("Choose Password", type="password", placeholder="Minimum 6 characters")
+                            signup_submit = st.form_submit_button("Register Account", use_container_width=True)
+            
+                            if signup_submit:
+                                if new_email and new_password:
+                                    if len(new_password) < 6:
+                                        st.error("❌ Password must be at least 6 characters long.")
+                                    else:
+                                        try:
+                                            # Registers the user directly into your Supabase database
+                                            response = supabase.auth.sign_up({
+                                                "email": new_email.strip(),
+                                                "password": new_password
+                                            })
+                                            st.success("🎉 Account created successfully! You can now switch to the 'Sign In' tab and log in.")
+                                        except Exception as e:
+                                            st.error(f"Registration Failed: {e}")
+                                else:
+                                    st.warning("Please fill in both fields.")
+                    st.write("")
+                    if st.button("⬅️ Return to Landing Page", use_container_width=True):
+                       st.session_state.app_stage = "landing"
+                       st.rerun()
