@@ -268,17 +268,33 @@ if st.session_state.logged_in:
             # 3. EXECUTING THE ORDER OF OPERATIONS MATH
             # ==========================================
             # --- STEP A: Standard Clean for core metrics ---
-            df['clean_rev_series'] = clean_to_numeric_series(df[rev_col])
-            df['clean_ad_series'] = clean_to_numeric_series(df[ad_col])
+    
+            # 1. Clean Revenue Column Safely (Creates a 0.0 series if None)
+            if rev_col == "None" or not rev_col:
+                df['clean_rev_series'] = pd.Series(0.0, index=df.index)
+            else:
+                df['clean_rev_series'] = clean_to_numeric_series(df[rev_col])
+                
+            # 2. Clean Ad Spend Column Safely (Creates a 0.0 series if None)
+            if ad_col == "None" or not ad_col:
+                df['clean_ad_series'] = pd.Series(0.0, index=df.index)
+            else:
+                df['clean_ad_series'] = clean_to_numeric_series(df[ad_col])
         
+            # Calculate individual total numbers using your original np.sum logic
             total_rev = np.sum(df['clean_rev_series'].to_numpy())
             total_ad = np.sum(df['clean_ad_series'].to_numpy())
         
-            # Sum up all individual cost columns
+            # 3. Sum up all individual cost columns safely (skips "None")
             total_cost_series = pd.Series(0.0, index=df.index)
-            for col in cost_cols:
-                total_cost_series += clean_to_numeric_series(df[col])
+            if 'cost_cols' in locals() and cost_cols:
+                for col in cost_cols:
+                    if col != "None" and col in df.columns:
+                        total_cost_series += clean_to_numeric_series(df[col])
+                        
+            # Calculate total costs from the series
             total_costs = np.sum(total_cost_series.to_numpy())
+
         
         
             # --- STEP B: Smart Auto-Fuzzy Match for Discount Columns ---
