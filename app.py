@@ -455,22 +455,37 @@ else:
         margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
         roas = total_rev / total_ad if total_ad > 0.0 else 0.0
         
-        # # 2. Compute Core Financial Metrics
-        if rev_col == "None":
+         # # 2. Compute Core Financial Metrics
+        
+        # --- REVENUE ---
+        if rev_col == "None" or not rev_col:
             total_rev = 0.0
         else:
             total_rev = float(demo_df[rev_col].sum())
-    
-        if ad_col == "None":
+
+        # --- AD SPEND ---
+        if ad_col == "None" or not ad_col:
             total_ad = 0.0
         else:
             total_ad = float(demo_df[ad_col].sum())
-    
-        total_costs = float(demo_df['cogs'].sum())
-        
+
+        # --- OTHER COSTS (Multi-select fallback) ---
+        # Checks if other_costs is empty, None, or only contains the string "None"
+        if not other_costs or "None" in other_costs:
+            # Filter out "None" if mixed with other columns, otherwise default to 0
+            valid_other_cols = [c for c in other_costs if c != "None"] if other_costs else []
+            if not valid_other_cols:
+                total_costs = 0.0
+            else:
+                total_costs = float(demo_df[valid_other_cols].sum(axis=1).sum())
+        else:
+            total_costs = float(demo_df[other_costs].sum(axis=1).sum())
+
+        # --- FINAL MATH ---
         net_profit = total_rev - total_ad - total_costs
         margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
         roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+
         
         # 3. Render Key Indicator Metrics Grid
         st.subheader("🔑 Key Metrics (Sandbox Data)")
