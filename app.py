@@ -185,23 +185,30 @@ if st.session_state.logged_in:
             cost_keywords = ['cogs', 'cost of goods', 'supplier cost', 'shipping cost', 'expenses', 'other costs', 'fees', 'othercost', 'other_cost', 'cost',               'other']
             
             # Check exact matches first, then fallback to partial substring matching
+            # --- 🗺️ CLEAN AUTOMATIC COLUMN MAPPING (Lines 188-205) ---
             def_rev = next((c for c in columns_list if str(c).lower().strip() in rev_keywords), None)
             if not def_rev:
-                def_rev = next((c for c in columns_list if any(k in str(c).lower() for k in rev_keywords)), columns_list[0])
+                # Substring matching, skipping generic false-positives
+                def_rev = next((c for c in columns_list if any(k in str(c).lower() for k in rev_keywords if k not in ['amount', 'price'])), None)
+            if not def_rev:
+                def_rev = "None"
     
             def_ad = next((c for c in columns_list if str(c).lower().strip() in ad_keywords), None)
             if not def_ad:
-            # Only match substrings if they contain explicit marketing terms like 'spend' or 'ad'
+                # Substring matching, skipping generic 'cost'
                 def_ad = next((c for c in columns_list if any(k in str(c).lower() for k in ad_keywords if k != 'cost')), None)
             if not def_ad:
                 def_ad = "None"
-            
+    
             def_costs = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
             if not def_costs:
                 # Prioritize columns that contain BOTH 'total' and 'cost'
                 def_costs = next((c for c in columns_list if 'total' in str(c).lower() and 'cost' in str(c).lower()), None)
             if not def_costs:
-                def_costs = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), columns_list[0])
+                # Substring fallback
+                def_costs = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), None)
+            if not def_costs:
+                def_costs = "None"
             
             if adjust_manually:
                 rev_col = st.sidebar.selectbox("Select Revenue Column:", columns_list, index=columns_list.index(def_rev))
