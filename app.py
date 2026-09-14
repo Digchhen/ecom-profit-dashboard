@@ -182,7 +182,7 @@ if st.session_state.logged_in:
             
             rev_keywords = ['revenue', 'total', 'subtotal', 'gross sales', 'net sales', 'sales', 'amount', 'income', 'turnover', 'rev','cash_inflow','net revenue','gross revenue calculated','net sales']
             ad_keywords = ['spend', 'ad spend', 'amount spent', 'cost', 'google cost', 'meta spend', 'facebook spend', 'clicks cost', 'ad_spend', 'ad','promo_budget']
-            cost_keywords = ['cogs', 'cost of goods', 'supplier cost', 'shipping cost', 'expenses', 'other costs', 'fees', 'othercost', 'other_cost', 'cost','discount','discounts',other']
+            cost_keywords = ['cogs', 'cost of goods', 'supplier cost', 'shipping cost', 'expenses', 'other costs', 'fees', 'othercost', 'other_cost', 'cost','discount','discounts','other']
             
             # Check exact matches first, then fallback to partial substring matching
             # --- 🗺️ CLEAN AUTOMATIC COLUMN MAPPING (Lines 188-205) ---
