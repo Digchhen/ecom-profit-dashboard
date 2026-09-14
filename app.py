@@ -195,7 +195,10 @@ if st.session_state.logged_in:
     
             def_costs = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
             if not def_costs:
-                def_costs = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), columns_list)
+                # Prioritize columns that contain BOTH 'total' and 'cost'
+                def_costs = next((c for c in columns_list if 'total' in str(c).lower() and 'cost' in str(c).lower()), None)
+            if not def_costs:
+                def_costs = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), columns_list[0])
             
             if adjust_manually:
                 rev_col = st.sidebar.selectbox("Select Revenue Column:", columns_list, index=columns_list.index(def_rev))
