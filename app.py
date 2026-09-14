@@ -184,9 +184,18 @@ if st.session_state.logged_in:
             ad_keywords = ['spend', 'ad spend', 'amount spent', 'cost', 'google cost', 'meta spend', 'facebook spend', 'clicks cost', 'ad_spend', 'ad','promo_budget']
             cost_keywords = ['cogs', 'cost of goods', 'supplier cost', 'shipping cost', 'expenses', 'other costs', 'fees', 'othercost', 'other_cost', 'cost',               'other']
             
-            def_rev = next((c for c in columns_list if any(k in str(c).lower() for k in rev_keywords)), columns_list[0])
-            def_ad = next((c for c in columns_list if any(k in str(c).lower() for k in ad_keywords)), columns_list[0])
-            def_costs = [c for c in columns_list if any(k.lower() in str(c).lower() for k in cost_keywords)]
+            # Check exact matches first, then fallback to partial substring matching
+            def_rev = next((c for c in columns_list if str(c).lower().strip() in rev_keywords), None)
+            if not def_rev:
+                def_rev = next((c for c in columns_list if any(k in str(c).lower() for k in rev_keywords)), columns_list[0])
+    
+            def_ad = next((c for c in columns_list if str(c).lower().strip() in ad_keywords), None)
+            if not def_ad:
+                def_ad = next((c for c in columns_list if any(k in str(c).lower() for k in ad_keywords)), columns_list[0])
+    
+            def_cost = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
+            if not def_cost:
+                def_cost = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), columns_list[0])
 
             if adjust_manually:
                 rev_col = st.sidebar.selectbox("Select Revenue Column:", columns_list, index=columns_list.index(def_rev))
