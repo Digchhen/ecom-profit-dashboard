@@ -272,30 +272,48 @@ if st.session_state.logged_in:
             # ==========================================
             def extract_discount_value(val, row_revenue=0.0):
                 """
-                Extracts discount amounts. Correctly distinguishes between 
-                flat dollar/rupee discounts and percentage-based discounts.
+                Cleans and extracts the actual discount dollar value from various formats
+                based on the following rules:
+                - 0.14 -> 14% discount
+                - 14%  -> 14% discount
+                - 14   -> 14% discount
+                - $14  -> $14.00 flat cash
                 """
+            
+                # Safely handle blank or missing cells
                 if pd.isna(val):
                     return 0.0
-                    
+            
+                # 1. Analyze the string format for flags
                 val_str = str(val).strip()
-                
-                # Check if the promo string specifies a percentage (e.g., "20%" or "SAVE20%")
                 is_percentage = '%' in val_str
-                
-                # Look for numeric integers or decimals inside the string
-                numbers = re.findall(r"[-+]?\d*\.\d+|\d+", val_str)
-                
-                if numbers:
-                    # FIX: Extract the first string element out of the list before casting to float!
-                    extracted_num = abs(float(numbers[0]))
-                    # FIX: Catch raw decimals like 0.19 and treat them as 19%
-                if is_percentage:
-                    return (extracted_num / 100.0) * row_revenue
-                elif 0.0 < extracted_num < 1.0:
-                    return extracted_num * row_revenue
-                else:
+                is_dollar = '$' in val_str or 'USD' in val_str.upper()
+            
+                # 2. Extract digits out of the text (e.g., "$14.00" -> 14.0)
+                numbers = re.findall(r'[-+]?\d*\.\d+|\d+', val_str)
+                if not numbers:
+                    return 0.0
+                extracted_num = abs(float(numbers[0]))
+            
+                # 3. Apply your precise logic conditions
+                if is_dollar:
+                    # Rule: $14 -> Flat $14.00 cash
                     return extracted_num
+                    
+                elif is_percentage:
+                    # Rule: 14% -> 14% discount rate
+                    return (extracted_num / 100.0) * row_revenue
+                    
+                elif 0.0 < extracted_num < 1.0:
+                    # Rule: 0.14 -> 14% discount rate
+                    return extracted_num * row_revenue
+                    
+                elif extracted_num >= 1.0:
+                    # Rule: 14 (Plain number) -> 14% discount rate
+                    return (extracted_num / 100.0) * row_revenue
+                    
+                else:
+                    return 0.0
         
                 # Fallback strategic keyword rules for pure text strings
                 val_lower = val_str.lower()
