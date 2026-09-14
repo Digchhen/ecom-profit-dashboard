@@ -289,12 +289,13 @@ if st.session_state.logged_in:
                 if numbers:
                     # FIX: Extract the first string element out of the list before casting to float!
                     extracted_num = abs(float(numbers[0]))
-                    if is_percentage:
-                        # If it's a percentage, calculate the actual monetary value off the row's revenue
-                        return (extracted_num / 100.0) * row_revenue
-                    else:
-                        # If it's a flat number, return it directly
-                        return extracted_num
+                    # FIX: Catch raw decimals like 0.19 and treat them as 19%
+                if is_percentage:
+                    return (extracted_num / 100.0) * row_revenue
+                elif 0.0 < extracted_num < 1.0:
+                    return extracted_num * row_revenue
+                else:
+                    return extracted_num
         
                 # Fallback strategic keyword rules for pure text strings
                 val_lower = val_str.lower()
