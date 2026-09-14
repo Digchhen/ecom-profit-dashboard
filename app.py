@@ -214,7 +214,7 @@ if st.session_state.logged_in:
                     def_costs.append(c)
     
             # Scan and auto-grab discount columns if present in the spreadsheet
-            discount_keywords = ['discount', 'promo', 'markdown', 'coupon', 'deduction', 'rebate']
+            discount_keywords = ['discount', 'markdown', 'coupon', 'deduction', 'rebate']
             discount_matches = [c for c in columns_list if any(dk in str(c).lower() for dk in discount_keywords)]
             for c in discount_matches:
                 if c not in def_costs:
