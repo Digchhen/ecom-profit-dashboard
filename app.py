@@ -200,15 +200,35 @@ if st.session_state.logged_in:
             if not def_ad:
                 def_ad = "None"
     
-            def_costs = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
+            # --- 🗺️ ROBUST MULTI-COLUMN MATCHING FOR OTHER COSTS ---
+            def_costs = []
+    
+            # Check for explicit exact keyword matches first
+            exact_matches = [c for c in columns_list if str(c).lower().strip() in cost_keywords]
+            def_costs.extend(exact_matches)
+    
+            # Add any fallback column names containing BOTH 'total' and 'cost'
+            total_cost_matches = [c for c in columns_list if 'total' in str(c).lower() and 'cost' in str(c).lower()]
+            for c in total_cost_matches:
+                if c not in def_costs:
+                    def_costs.append(c)
+    
+            # Scan and auto-grab discount columns if present in the spreadsheet
+            discount_keywords = ['discount', 'promo', 'markdown', 'coupon', 'deduction', 'rebate']
+            discount_matches = [c for c in columns_list if any(dk in str(c).lower() for dk in discount_keywords)]
+            for c in discount_matches:
+                if c not in def_costs:
+                    def_costs.append(c)
+    
+            # Final Substring fallback from standard cost_keywords if list remains empty
             if not def_costs:
-                # Prioritize columns that contain BOTH 'total' and 'cost'
-                def_costs = next((c for c in columns_list if 'total' in str(c).lower() and 'cost' in str(c).lower()), None)
+                substring_matches = [c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)]
+                if substring_matches:
+                    def_costs = [substring_matches[0]]
+    
+            # Fallback safety baseline structure
             if not def_costs:
-                # Substring fallback
-                def_costs = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), None)
-            if not def_costs:
-                def_costs = "None"
+                def_costs = ["None"]
             
             if adjust_manually:
                 rev_col = st.sidebar.selectbox("Select Revenue Column:", columns_list, index=columns_list.index(def_rev))
