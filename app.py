@@ -193,10 +193,10 @@ if st.session_state.logged_in:
             if not def_ad:
                 def_ad = next((c for c in columns_list if any(k in str(c).lower() for k in ad_keywords)), columns_list[0])
     
-            def_cost = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
-            if not def_cost:
-                def_cost = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), columns_list[0])
-
+            def_costs = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
+            if not def_costs:
+                def_costs = next((c for c in columns_list if any(k in str(c).lower() for k in cost_keywords)), columns_list)
+            
             if adjust_manually:
                 rev_col = st.sidebar.selectbox("Select Revenue Column:", columns_list, index=columns_list.index(def_rev))
                 ad_col = st.sidebar.selectbox("Select Ad Spend Column:", columns_list, index=columns_list.index(def_ad))
