@@ -191,8 +191,11 @@ if st.session_state.logged_in:
     
             def_ad = next((c for c in columns_list if str(c).lower().strip() in ad_keywords), None)
             if not def_ad:
-                def_ad = next((c for c in columns_list if any(k in str(c).lower() for k in ad_keywords)), columns_list[0])
-    
+            # Only match substrings if they contain explicit marketing terms like 'spend' or 'ad'
+                def_ad = next((c for c in columns_list if any(k in str(c).lower() for k in ad_keywords if k != 'cost')), None)
+            if not def_ad:
+                def_ad = "None"
+            
             def_costs = next((c for c in columns_list if str(c).lower().strip() in cost_keywords), None)
             if not def_costs:
                 # Prioritize columns that contain BOTH 'total' and 'cost'
