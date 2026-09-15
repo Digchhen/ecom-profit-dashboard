@@ -479,7 +479,70 @@ if st.session_state.logged_in:
             )
         
             st.plotly_chart(fig, use_container_width=True)
-
+           # [KEEP YOUR EXISTING CODE HERE DOWN TO THE PIE CHART RENDER]
+    
+            st.plotly_chart(fig, use_container_width=True) # Your existing donut chart render
+        
+            # --- PULL IN DATA FOR THE LINE CHART ---
+            st.markdown("---")
+            st.subheader("📈 Financial Performance Over Time")
+            
+            # 1. Add time grain control widget
+            time_grain = st.radio(
+                "View Scale:", 
+                options=["Daily", "Weekly", "Monthly"], 
+                horizontal=True
+            )
+            
+            # 2. Check if a date column is selected in your sidebar configurations
+            # Note: Ensure you define `date_col` in your sidebar selectboxes at the top of your file
+            if 'date_col' in locals() or 'date_col' in globals():
+                if date_col:
+                    # Create data copy and ensure chronological sorting
+                    chart_df = df[[date_col]].copy()
+                    chart_df[date_col] = pd.to_datetime(chart_df[date_col])
+                    
+                    # Map values dynamically using your existing variables
+                    chart_df['Revenue'] = row_revenue
+                    chart_df['Total Expenses'] = total_ad + total_costs
+                    chart_df['Net Profit'] = net_profit
+                    
+                    # 3. Resample intervals based on user selection
+                    if time_grain == "Weekly":
+                        timeline = chart_df.resample('W', on=date_col).sum()
+                    elif time_grain == "Monthly":
+                        timeline = chart_df.resample('M', on=date_col).sum()
+                    else:
+                        timeline = chart_df.groupby(date_col).sum()
+                        
+                    timeline = timeline.reset_index()
+                    
+                    # 4. Reshape data structure for multi-line plotting
+                    melted_df = pd.melt(
+                        timeline, 
+                        id_vars=[date_col], 
+                        value_vars=['Revenue', 'Total Expenses', 'Net Profit'],
+                        var_name='Metric', 
+                        value_name='Amount ($)'
+                    )
+                    
+                    # 5. Build and render the line chart object
+                    line_fig = px.line(
+                        melted_df, 
+                        x=date_col, 
+                        y='Amount ($)', 
+                        color='Metric',
+                        color_discrete_map={
+                            'Revenue': '#2ecc71',        # Bright Green
+                            'Total Expenses': '#e74c3c', # Soft Red
+                            'Net Profit': profit_color    # Uses your dynamic teal/red theme!
+                        },
+                        template="plotly_dark"
+                    )
+                    
+                    line_fig.update_layout(hovermode="x unified", legend=dict(orientation="h", y=1.1))
+                    st.plotly_chart(line_fig, use_container_width=True)
+            
         except Exception as outer_error:
             st.error(f"❌ Verification Error: {outer_error}")
 
