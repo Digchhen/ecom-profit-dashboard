@@ -541,7 +541,7 @@ if st.session_state.logged_in:
                     )
                     
                     line_fig.update_layout(hovermode="x unified", legend=dict(orientation="h", y=1.1))
-                    st.plotly_chart(line_fig, use_container_width=True)
+                    st.plotly_chart(line_fig, use_container_width=True, key="ecommerce_line_timeline_chart")
             
         except Exception as outer_error:
             st.error(f"❌ Verification Error: {outer_error}")
