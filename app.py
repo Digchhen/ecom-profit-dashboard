@@ -594,6 +594,15 @@ else:
             'cogs': [800 + i*40 for i in range(20)]
         })
        # 1. Run the auto-calculation logic right before computing metrics
+
+        def auto_calculate_gross_revenue(df):
+            if 'Gross_Revenue_Calculated' not in df.columns:
+                if 'revenue' in df.columns:
+                    df['Gross_Revenue_Calculated'] = df['revenue']
+                else:
+                    df['Gross_Revenue_Calculated'] = 0
+            return df
+        
         demo_df = auto_calculate_gross_revenue(demo_df)
                 
       # # 2. Compute Core Financial Metrics
