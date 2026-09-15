@@ -515,12 +515,18 @@ if st.session_state.logged_in:
                     chart_df['Total Expenses'] = df[ad_col] + df[cost_cols].sum(axis=1) if isinstance(cost_cols, list) and cost_cols else df[ad_col]
                     chart_df['Net Profit'] = chart_df['Revenue'] - chart_df['Total Expenses']
                             
-                    # 3. Resample time intervals dynamically
-                    if time_grain == "Weekly":
+                    # 3. Calculate the true date range spanned by the uploaded file
+                    date_range_days = (chart_df[date_col].max() - chart_df[date_col].min()).days + 1
+                    
+                    # Smart time-grain fallback routing to prevent crashes
+                    if time_grain == "Weekly" and date_range_days >= 7:
                         timeline = chart_df.resample('W', on=date_col).sum()
-                    elif time_grain == "Monthly":
-                        timeline = chart_df.resample('M', on=date_col).sum()
+                    elif time_grain == "Monthly" and date_range_days >= 28:
+                        timeline = chart_df.resample('ME', on=date_col).sum()
                     else:
+                        # Fallback safely to standard date grouping if data is too short
+                        if time_grain in ["Weekly", "Monthly"]:
+                            st.info(f"💡 Info: Uploaded data spans only {date_range_days} days. Showing default daily breakdown.")
                         timeline = chart_df.groupby(date_col).sum()
                         
                     timeline = timeline.reset_index()
