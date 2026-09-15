@@ -231,12 +231,23 @@ if st.session_state.logged_in:
                 def_costs = ["None"]
             
             if adjust_manually:
+                # 1. Smart keyword finder for the date field right inside the dropdown index
+                def_date = next((c for c in columns_list if any(k in str(c).lower() for k in ['date', 'time', 'timestamp', 'day'])), columns_list[0] if columns_list else None)
+                
+                date_col = st.sidebar.selectbox(
+                    "Select Date Column:", 
+                    columns_list, 
+                    index=columns_list.index(def_date) if def_date in columns_list else 0
+                )
                 rev_col = st.sidebar.selectbox("Select Revenue Column:", columns_list, index=columns_list.index(def_rev))
                 ad_col = st.sidebar.selectbox("Select Ad Spend Column:", columns_list, index=columns_list.index(def_ad))
-                cost_cols = st.sidebar.multiselect("Select Other Costs Columns:", columns_list, default=def_costs)
+                cost_cols = st.sidebar.multiselect("Select other costs columns:", columns_list, default=def_costs)
             else:
-                rev_col, ad_col, cost_col = def_rev, def_ad, def_cost
-
+                # 2. Automated path: auto-detects the date column if manual toggle is off
+                def_date = next((c for c in columns_list if any(k in str(c).lower() for k in ['date', 'time', 'timestamp', 'day'])), None)
+                
+                date_col = def_date
+                rev_col, ad_col, cost_cols = def_rev, def_ad, def_costs
             def clean_to_numeric_series(series):
                 """
                 Cleans financial text columns. Preserves negative values, 
