@@ -604,6 +604,15 @@ else:
             return df
         
         demo_df = auto_calculate_gross_revenue(demo_df)
+
+        def clean_to_numeric_series(series):
+            """
+            Cleans a pandas series by removing non-numeric characters (like $ or commas)
+            and converting the data into numbers.
+            """
+            import pandas as pd
+            cleaned = pd.to_numeric(series.astype(str).str.replace(r'[^\d.]', '', regex=True), errors='coerce')
+            return cleaned.fillna(0)
                 
       # # 2. Compute Core Financial Metrics
       # Change this line to use the new calculated column:
