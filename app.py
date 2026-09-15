@@ -488,12 +488,8 @@ if st.session_state.logged_in:
                     )
                 ]
             )
-        
-            st.plotly_chart(fig, use_container_width=True)
-           # [KEEP YOUR EXISTING CODE HERE DOWN TO THE PIE CHART RENDER]
-    
-            st.plotly_chart(fig, use_container_width=True) # Your existing donut chart render
-        
+            st.plotly_chart(fig, use_container_width=True, key="main_ecom_donut_chart")
+           
             # --- PULL IN DATA FOR THE LINE CHART ---
             st.markdown("---")
             st.subheader("📈 Financial Performance Over Time")
