@@ -561,7 +561,7 @@ if st.session_state.logged_in:
                     st.write("---") 
                     st.subheader("🔌 Upcoming Integrations")
                     
-                    col1, col2 = st.columns()
+                    col1, col2 = st.columns(2)
                     
                     with col1:
                         st.markdown("**Shopify Connect (Coming Soon)**")
