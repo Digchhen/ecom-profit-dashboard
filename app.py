@@ -594,38 +594,38 @@ else:
             'cogs': [800 + i*40 for i in range(20)]
         })
         
-        # 1. Run the auto-calculation logic right before computing metrics
-        demo_df = auto_calculate_gross_revenue(demo_df)
-        
-        # # 2. Compute Core Financial Metrics
-        # Change this line to use the new calculated column:
-        total_rev = float(demo_df['Gross_Revenue_Calculated'].sum())
-        
-        # Keep these exactly the same as your original code:
-        total_ad = float(demo_df['spend'].sum())
-        total_costs = float(demo_df['cogs'].sum())
-        
-        net_profit = total_rev - total_ad - total_costs
-        margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
-        roas = total_rev / total_ad if total_ad > 0.0 else 0.0
-        
-        # # 2. Compute Core Financial Metrics (Sandbox Preset Data)
-        
-        # Clean and calculate the core sandbox series directly
-        demo_df['clean_rev_series'] = clean_to_numeric_series(demo_df[rev_col])
-        demo_df['clean_ad_series'] = clean_to_numeric_series(demo_df[ad_col])
-        
-        total_rev = float(np.sum(demo_df['clean_rev_series'].to_numpy()))
-        total_ad = float(np.sum(demo_df['clean_ad_series'].to_numpy()))
-
-        # Sum up all sandbox preset cost columns directly
-        total_cost_series = pd.Series(0.0, index=demo_df.index)
-        if 'other_costs' in locals() and other_costs:
-            for col in other_costs:
-                if col in demo_df.columns:
-                    total_cost_series += clean_to_numeric_series(demo_df[col])
-                    
-        total_costs = float(np.sum(total_cost_series.to_numpy()))
+            # 1. Run the auto-calculation logic right before computing metrics
+            demo_df = auto_calculate_gross_revenue(demo_df)
+            
+            # # 2. Compute Core Financial Metrics
+            # Change this line to use the new calculated column:
+            total_rev = float(demo_df['Gross_Revenue_Calculated'].sum())
+            
+            # Keep these exactly the same as your original code:
+            total_ad = float(demo_df['spend'].sum())
+            total_costs = float(demo_df['cogs'].sum())
+            
+            net_profit = total_rev - total_ad - total_costs
+            margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
+            roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+            
+            # # 2. Compute Core Financial Metrics (Sandbox Preset Data)
+            
+            # Clean and calculate the core sandbox series directly
+            demo_df['clean_rev_series'] = clean_to_numeric_series(demo_df[rev_col])
+            demo_df['clean_ad_series'] = clean_to_numeric_series(demo_df[ad_col])
+            
+            total_rev = float(np.sum(demo_df['clean_rev_series'].to_numpy()))
+            total_ad = float(np.sum(demo_df['clean_ad_series'].to_numpy()))
+    
+            # Sum up all sandbox preset cost columns directly
+            total_cost_series = pd.Series(0.0, index=demo_df.index)
+            if 'other_costs' in locals() and other_costs:
+                for col in other_costs:
+                    if col in demo_df.columns:
+                        total_cost_series += clean_to_numeric_series(demo_df[col])
+                        
+            total_costs = float(np.sum(total_cost_series.to_numpy()))
 
         # --- FINAL MATH ---
         net_profit = total_rev - total_ad - total_costs
