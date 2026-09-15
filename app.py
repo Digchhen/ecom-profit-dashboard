@@ -510,11 +510,11 @@ if st.session_state.logged_in:
                     chart_df = df[[date_col]].copy()
                     chart_df[date_col] = pd.to_datetime(chart_df[date_col])
                     
-                    # Match existing metrics variables from your dashboard logic
-                    chart_df['Revenue'] = row_revenue
-                    chart_df['Total Expenses'] = total_ad + total_costs
-                    chart_df['Net Profit'] = net_profit
-                    
+                    # Map values dynamically using your existing sidebar variables
+                    chart_df['Revenue'] = df[rev_col]
+                    chart_df['Total Expenses'] = df[ad_col] + df[cost_cols].sum(axis=1) if isinstance(cost_cols, list) and cost_cols else df[ad_col]
+                    chart_df['Net Profit'] = chart_df['Revenue'] - chart_df['Total Expenses']
+                            
                     # 3. Resample time intervals dynamically
                     if time_grain == "Weekly":
                         timeline = chart_df.resample('W', on=date_col).sum()
