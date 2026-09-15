@@ -503,18 +503,19 @@ if st.session_state.logged_in:
             
             # 2. Check if a date column is selected in your sidebar configurations
             # Note: Ensure you define `date_col` in your sidebar selectboxes at the top of your file
+            # 2. Render chart if date_col is captured from your sidebar selection
             if 'date_col' in locals() or 'date_col' in globals():
                 if date_col:
-                    # Create data copy and ensure chronological sorting
+                    # Safely parse dates from data frame upload
                     chart_df = df[[date_col]].copy()
                     chart_df[date_col] = pd.to_datetime(chart_df[date_col])
                     
-                    # Map values dynamically using your existing variables
+                    # Match existing metrics variables from your dashboard logic
                     chart_df['Revenue'] = row_revenue
                     chart_df['Total Expenses'] = total_ad + total_costs
                     chart_df['Net Profit'] = net_profit
                     
-                    # 3. Resample intervals based on user selection
+                    # 3. Resample time intervals dynamically
                     if time_grain == "Weekly":
                         timeline = chart_df.resample('W', on=date_col).sum()
                     elif time_grain == "Monthly":
@@ -524,7 +525,7 @@ if st.session_state.logged_in:
                         
                     timeline = timeline.reset_index()
                     
-                    # 4. Reshape data structure for multi-line plotting
+                    # 4. Restructure columns into narrow format for multi-line display
                     melted_df = pd.melt(
                         timeline, 
                         id_vars=[date_col], 
@@ -533,22 +534,22 @@ if st.session_state.logged_in:
                         value_name='Amount ($)'
                     )
                     
-                    # 5. Build and render the line chart object
+                    # 5. Build full Plotly line visualization
                     line_fig = px.line(
                         melted_df, 
                         x=date_col, 
                         y='Amount ($)', 
                         color='Metric',
                         color_discrete_map={
-                            'Revenue': '#2ecc71',        # Bright Green
-                            'Total Expenses': '#e74c3c', # Soft Red
-                            'Net Profit': profit_color    # Uses your dynamic teal/red theme!
+                            'Revenue': '#2ecc71',        # Balanced Green
+                            'Total Expenses': '#e74c3c', # Balanced Red
+                            'Net Profit': profit_color    # Connects with your custom center profit indicator!
                         },
                         template="plotly_dark"
                     )
                     
                     line_fig.update_layout(hovermode="x unified", legend=dict(orientation="h", y=1.1))
-                    st.plotly_chart(line_fig, use_container_width=True, key="ecommerce_line_timeline_chart")
+                    st.plotly_chart(line_fig, use_container_width=True, key="dashboard_line_timeline_chart")
             
         except Exception as outer_error:
             st.error(f"❌ Verification Error: {outer_error}")
