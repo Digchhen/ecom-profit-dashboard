@@ -581,7 +581,8 @@ if st.session_state.logged_in:
                     feedback = st.feedback("thumbs", key="unique_real_shopify_vote")
                     
                 if st.session_state.get("unique_real_shopify_vote") is not None:
-                    is_positive = st.session_state.unique_real_shopify_vote == 0
+                    # 1 = Thumbs Up, 0 = Thumbs Down in Streamlit feedback
+                    is_positive = st.session_state.unique_real_shopify_vote == 1
                     
                     if is_positive:
                         st.success("Awesome! Glad to hear you're excited for Shopify automation.")
@@ -590,25 +591,40 @@ if st.session_state.logged_in:
                             placeholder="e.g., TikTok Shop sync, Amazon Multi-channel...",
                             key="unique_real_shopify_positive_notes"
                         )
-                        else:
+        
+                        # --- SUBMIT BUTTON FOR THUMBS UP ---
+                        if st.button("Submit Suggestions", key="submit_shopify_pos_btn"):
+                            if user_notes.strip() != "":
+                                try:
+                                    supabase.table("user_feedback").insert({
+                                        "vote_type": "thumbs_up",
+                                        "user_suggestion": user_notes
+                                    }).execute()
+                                    st.toast("🎉 Thank you! Your feedback has been saved.", icon="🎯")
+                                except Exception as e:
+                                    st.error(f"Error saving to database: {e}")
+                            else:
+                                st.warning("⚠️ Please type your feedback before clicking submit!")
+
+                    else:
                         st.info("Got it. Is there another platform integration you need instead?")
                         alt_notes = st.text_input(
                             "Tell us what integration would be more valuable to you:",
                             placeholder="e.g., WooCommerce, Stripe API, Custom CSV...",
                             key="unique_real_shopify_negative_notes"
                         )
-                        
+        
+                        # --- SUBMIT BUTTON FOR THUMBS DOWN ---
                         if st.button("Submit Alternative Choice", key="submit_shopify_alt_btn"):
                             if alt_notes.strip() != "":
                                 try:
                                     supabase.table("user_feedback").insert({
                                         "vote_type": "thumbs_down",
-                                        "user_suggestion": alt_notes                                    
+                                        "user_suggestion": alt_notes
                                     }).execute()
-                                    
-                                    st.toast("Thank you! We will look into building that integration.", icon="📣")
+                                    st.toast("Thank you! We will look into building that instead.", icon="📣")
                                 except Exception as e:
-                                    st.error(f"Error: {e}")
+                                    st.error(f"Error saving to database: {e}")
                             else:
                                 st.warning("⚠️ Please type your request before clicking submit!")
 # ==========================================================
