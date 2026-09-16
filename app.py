@@ -248,6 +248,15 @@ if st.session_state.logged_in:
                 
                 date_col = def_date
                 rev_col, ad_col, cost_cols = def_rev, def_ad, def_costs
+
+            # --- ADD THIS LOGIC HERE (Around Line 251, before your cleaning function) ---
+
+            # Flag to tell your downstream dashboard whether time-charts should be rendered
+            has_date_data = True
+                
+                if date_col == "None":
+                    has_date_data = False
+                    # Do not let your script convert or verify "None" against your dataframe columns!  
             def clean_to_numeric_series(series):
                 """
                 Cleans financial text columns. Preserves negative values, 
@@ -505,7 +514,7 @@ if st.session_state.logged_in:
             # Note: Ensure you define `date_col` in your sidebar selectboxes at the top of your file
             # 2. Render chart if date_col is captured from your sidebar selection
             if 'date_col' in locals() or 'date_col' in globals():
-                if date_col:
+                if date_col and date_col != "None":
                     # Safely parse dates from data frame upload
                     chart_df = df[[date_col]].copy()
                     chart_df[date_col] = pd.to_datetime(chart_df[date_col])
