@@ -254,9 +254,10 @@ if st.session_state.logged_in:
             # Flag to tell your downstream dashboard whether time-charts should be rendered
             has_date_data = True
                 
-                if date_col == "None":
+            if date_col == "None":
                     has_date_data = False
-                    # Do not let your script convert or verify "None" against your dataframe columns!  
+                    # Do not let your script convert or verify "None" against your dataframe columns!
+            
             def clean_to_numeric_series(series):
                 """
                 Cleans financial text columns. Preserves negative values, 
