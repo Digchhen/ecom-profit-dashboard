@@ -590,18 +590,21 @@ if st.session_state.logged_in:
                             placeholder="e.g., TikTok Shop sync, Amazon Multi-channel...",
                             key="unique_real_shopify_positive_notes"
                         )
-                        if st.button("Submit Response", key="submit_shopify_feedback_btn"):
-                                if user_notes.strip() != "":
-                                    st.toast("🎯 Thanks! Your feature requests have been saved.", icon="🚀")
-                                # Use this clean snippet inside your code block:
-                                    try:
-                                        supabase.table("user_feedback").insert({
-                                            "vote_type": "thumbs_up",
-                                            "user_suggestion": user_notes
-                                        }).execute()
-                                        st.toast("🎉 Feedback saved directly to your Supabase table!")
-                                    except Exception as e:
-                                        st.error(f"Error: {e}")
+                        # --- ADD THE SUBMIT BUTTON FOR THUMBS DOWN HERE ---
+                        if st.button("Submit Alternative", key="submit_shopify_alt_btn"):
+                            if alt_notes.strip() != "":
+                                try:
+                                    # Saves to Supabase with "thumbs_down" tracking tag
+                                    supabase.table("user_feedback").insert({
+                                        "vote_type": "thumbs_down",
+                                        "user_suggestion": alt_notes
+                                    }).execute()
+                                    
+                                    st.toast("Thank you! We will look into building that integration.", icon="📣")
+                                except Exception as e:
+                                    st.error(f"Error: {e}")
+                            else:
+                                st.warning("⚠️ Please type your request before
                     else:
                         st.info("Got it. Is there another platform integration you need instead?")
                         alt_notes = st.text_input(
