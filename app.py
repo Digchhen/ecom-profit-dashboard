@@ -567,66 +567,43 @@ if st.session_state.logged_in:
                     line_fig.update_layout(hovermode="x unified", legend=dict(orientation="h", y=1.1))
                     st.plotly_chart(line_fig, use_container_width=True, key="dashboard_line_timeline_chart")
                     
-                # --- Upcoming Integrations Section ---
-                st.write("---") 
-                st.subheader("🔌 Upcoming Integrations")
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("**Shopify Connect (Coming Soon)**")
-                    st.caption("Sync live inventory tracking, automated ad platform spend metrics, and true multi-channel net profit.")
-                    
-                with col2:
-                    feedback = st.feedback("thumbs", key="unique_real_shopify_vote")
-                    
-                if st.session_state.get("unique_real_shopify_vote") is not None:
-                    # 1 = Thumbs Up, 0 = Thumbs Down in Streamlit feedback
-                    is_positive = st.session_state.unique_real_shopify_vote == 1
-                    
-                    if is_positive:
-                        st.success("Awesome! Glad to hear you're excited for Shopify automation.")
-                        user_notes = st.text_input(
-                            "What specific feature or metrics do you want us to support first?",
-                            placeholder="e.g., TikTok Shop sync, Amazon Multi-channel...",
-                            key="unique_real_shopify_positive_notes"
-                        )
-        
-                        # --- SUBMIT BUTTON FOR THUMBS UP ---
-                        if st.button("Submit Suggestions", key="submit_shopify_pos_btn"):
-                            if user_notes.strip() != "":
-                                try:
-                                    supabase.table("user_feedback").insert({
-                                        "vote_type": "thumbs_up",
-                                        "user_suggestion": user_notes
-                                    }).execute()
-                                    st.toast("🎉 Thank you! Your feedback has been saved.", icon="🎯")
-                                except Exception as e:
-                                    st.error(f"Error saving to database: {e}")
-                            else:
-                                st.warning("⚠️ Please type your feedback before clicking submit!")
 
-                    else:
-                        st.info("Got it. Is there another platform integration you need instead?")
-                        alt_notes = st.text_input(
-                            "Tell us what integration would be more valuable to you:",
-                            placeholder="e.g., WooCommerce, Stripe API, Custom CSV...",
-                            key="unique_real_shopify_negative_notes"
-                        )
-        
-                        # --- SUBMIT BUTTON FOR THUMBS DOWN ---
-                        if st.button("Submit Alternative Choice", key="submit_shopify_alt_btn"):
-                            if alt_notes.strip() != "":
-                                try:
-                                    supabase.table("user_feedback").insert({
-                                        "vote_type": "thumbs_down",
-                                        "user_suggestion": alt_notes
-                                    }).execute()
-                                    st.toast("Thank you! We will look into building that instead.", icon="📣")
-                                except Exception as e:
-                                    st.error(f"Error saving to database: {e}")
-                            else:
-                                st.warning("⚠️ Please type your request before clicking submit!")
+            # --- Upcoming Integrations Section ---
+            # =========================================================
+            st.write("---")
+            st.subheader("🔌 Upcoming Integrations")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Shopify Connect (Coming Soon)**")
+                st.caption("Sync live inventory tracking, automated ad platform spend metrics, and true multi-channel net profit.")
+            
+            with col2:
+                feedback = st.feedback("thumbs", key="unique_real_shopify_vote")
+            
+            if st.session_state.get("unique_real_shopify_vote") is not None:
+                is_positive = st.session_state.unique_real_shopify_vote == 1
+                
+                if is_positive:
+                    st.success("Awesome! Glad to hear you're excited for Shopify automation.")
+                    user_notes = st.text_input(
+                        "What specific feature or metrics do you want us to support first?",
+                        placeholder="e.g., TikTok Shop sync, Amazon Multi-channel...",
+                        key="unique_real_shopify_positive_notes"
+                    )
+                    if user_notes:
+                        st.toast("Thanks! Your feature requests have been saved.", icon="🎯")
+                        
+                else:
+                    st.info("Got it. Is there another platform integration you need instead?")
+                    alt_notes = st.text_input(
+                        "Tell us what integration would be more valuable to you:",
+                        placeholder="e.g., WooCommerce, Stripe API, Custom CSV...",
+                        key="unique_real_shopify_negative_notes"
+                    )
+                    if alt_notes:
+                        st.toast("Got it, we will look into building that instead!", icon="📣")
 # ==========================================================
 # 5. THE LOGIN SCREEN (FALLBACK ACCESS WITH SIGN-UP)
 # ==========================================================
