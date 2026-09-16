@@ -590,7 +590,8 @@ if st.session_state.logged_in:
                             placeholder="e.g., TikTok Shop sync, Amazon Multi-channel...",
                             key="unique_real_shopify_positive_notes"
                         )
-                        if user_notes:
+                        if st.button("Submit Response", key="submit_shopify_feedback_btn"):
+                            if user_notes.strip() != "":
                             st.toast("🎯 Thanks! Your feature requests have been saved.", icon="🚀")
                             # Use this clean snippet inside your code block:
                             try:
