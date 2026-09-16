@@ -592,6 +592,15 @@ if st.session_state.logged_in:
                         )
                         if user_notes:
                             st.toast("🎯 Thanks! Your feature requests have been saved.", icon="🚀")
+                            # Use this clean snippet inside your code block:
+                            try:
+                                supabase.table("user_feedback").insert({
+                                    "vote_type": "thumbs_up",
+                                    "user_suggestion": user_notes
+                                }).execute()
+                                st.toast("🎉 Feedback saved directly to your Supabase table!")
+                            except Exception as e:
+                                st.error(f"Error: {e}")
                     else:
                         st.info("Got it. Is there another platform integration you need instead?")
                         alt_notes = st.text_input(
