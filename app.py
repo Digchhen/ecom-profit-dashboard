@@ -590,14 +590,20 @@ if st.session_state.logged_in:
                             placeholder="e.g., TikTok Shop sync, Amazon Multi-channel...",
                             key="unique_real_shopify_positive_notes"
                         )
-                        # --- ADD THE SUBMIT BUTTON FOR THUMBS DOWN HERE ---
-                        if st.button("Submit Alternative", key="submit_shopify_alt_btn"):
+                        else:
+                        st.info("Got it. Is there another platform integration you need instead?")
+                        alt_notes = st.text_input(
+                            "Tell us what integration would be more valuable to you:",
+                            placeholder="e.g., WooCommerce, Stripe API, Custom CSV...",
+                            key="unique_real_shopify_negative_notes"
+                        )
+                        
+                        if st.button("Submit Alternative Choice", key="submit_shopify_alt_btn"):
                             if alt_notes.strip() != "":
                                 try:
-                                    # Saves to Supabase with "thumbs_down" tracking tag
                                     supabase.table("user_feedback").insert({
                                         "vote_type": "thumbs_down",
-                                        "user_suggestion": alt_notes
+                                        "user_suggestion": alt_notes                                    
                                     }).execute()
                                     
                                     st.toast("Thank you! We will look into building that integration.", icon="📣")
@@ -605,19 +611,6 @@ if st.session_state.logged_in:
                                     st.error(f"Error: {e}")
                             else:
                                 st.warning("⚠️ Please type your request before clicking submit!")
-                    else:
-                        st.info("Got it. Is there another platform integration you need instead?")
-                        alt_notes = st.text_input(
-                            "Tell us what integration would be more valuable to you:",
-                            placeholder="e.g., WooCommerce, Stripe API, Custom CSV...",
-                            key="unique_real_shopify_negative_notes"
-                        )
-                        if alt_notes:
-                            st.toast("📝 Got it. We will look into building that instead!", icon="👍")
-        except Exception as outer_error:
-            st.error(f"❌ Verification Error: {outer_error}")
-
-
 # ==========================================================
 # 5. THE LOGIN SCREEN (FALLBACK ACCESS WITH SIGN-UP)
 # ==========================================================
