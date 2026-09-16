@@ -604,7 +604,7 @@ if st.session_state.logged_in:
                                 except Exception as e:
                                     st.error(f"Error: {e}")
                             else:
-                                st.warning("⚠️ Please type your request before
+                                st.warning("⚠️ Please type your request before clicking submit!")
                     else:
                         st.info("Got it. Is there another platform integration you need instead?")
                         alt_notes = st.text_input(
