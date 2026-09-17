@@ -813,7 +813,7 @@ elif st.session_state.app_stage == "auth":
                             else:
                                 st.warning("Please fill in both fields.")
                 st.write("")
-                    if st.button("⬅️ Return to Landing Page", use_container_width=True):
-                        st.session_state.app_stage = "landing"
-                        st.rerun()       
+                if st.button("⬅️ Return to Landing Page", use_container_width=True):
+                    st.session_state.app_stage = "landing"
+                    st.rerun()       
         
