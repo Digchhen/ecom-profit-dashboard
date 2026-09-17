@@ -607,8 +607,8 @@ if st.session_state.logged_in:
 # ==========================================================
 # 5. THE LOGIN SCREEN (FALLBACK ACCESS WITH SIGN-UP)
 # ==========================================================
-    except Exception as file_err:
-        st.error(f"Error processing the uploaded file: {file_err}")
+        except Exception as file_err:
+            st.error(f"Error processing the uploaded file: {file_err}")
     
     if st.session_state.app_stage == "landing":
         st.title("🚀 Stop Guessing Your E-commerce Margins")
