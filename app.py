@@ -173,6 +173,9 @@ if st.session_state.logged_in:
                 df = pd.read_csv(uploaded_file)
             else:
                 df = pd.read_excel(uploaded_file)
+        except Exception as file_err:
+            st.error(f"Error loading file: {file_err}")
+            st.stop()
                     
             st.sidebar.markdown("---")
             st.sidebar.markdown("### 🗺️ Column Mapping Settings")
