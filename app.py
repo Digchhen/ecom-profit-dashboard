@@ -609,37 +609,41 @@ if st.session_state.logged_in:
 # ==========================================================
         # --- PASTE THIS RIGHT ABOVE THE "except Exception as file_err:" LINE ---
         
-            st.markdown("---")
-            st.subheader("💡 Feature Request & Feedback")
-            st.write("See a metric missing? Tell us what to add to this dashboard next.")
-    
-            # 1. Create the Form (Prevents reloading while typing)
-            with st.form("dashboard_feedback_form"):
-                dashboard_feedback = st.text_input("Feedback", placeholder="e.g. Add a column for Referrals...")
-                
-                # This button triggers the submission
-                dash_submit = st.form_submit_button("🚀 Submit Feedback")
-    
-            # 2. Handle the Database Save
-            if dash_submit and dashboard_feedback:
-                conn = get_db_connection()
-                if conn:
-                    try:
-                        cur = conn.cursor()
-                        
-                        # 👇 CHECK YOUR TABLE NAME: 'user_feedback'
-                        # 👇 CHECK YOUR COLUMN NAME: 'feedback_text'
-                        query = "INSERT INTO user_feedback (feedback_text) VALUES (%s);"
-                        
-                        cur.execute(query, (dashboard_feedback,))
-                        conn.commit()
-                        cur.close()
-                        conn.close()
-                        
-                        st.success("Thank you! We've logged your request.")
-                    except Exception as e:
-                        st.error(f"Database Error: {e}")
-    
+        # --- PASTE THIS RIGHT ABOVE THE "except Exception as file_err:" LINE ---
+        
+        st.markdown("---")
+        st.subheader("💡 Feature Request & Feedback")
+        st.write("See a metric missing? Tell us what to add to this dashboard next.")
+
+        # 1. Create the Form (Prevents reloading while typing)
+        with st.form("dashboard_feedback_form"):
+            dashboard_feedback = st.text_input("Feedback", placeholder="e.g. Add a column for Referrals...")
+            
+            # This button triggers the submission
+            dash_submit = st.form_submit_button("🚀 Submit Feedback")
+
+        # 2. Handle the Database Save
+        if dash_submit and dashboard_feedback:
+            conn = get_db_connection()
+            if conn:
+                try:
+                    cur = conn.cursor()
+                    
+                    # 👇 CHECK YOUR TABLE NAME: 'user_feedback'
+                    # 👇 CHECK YOUR COLUMN NAME: 'feedback_text'
+                    query = "INSERT INTO user_feedback (feedback_text) VALUES (%s);"
+                    
+                    cur.execute(query, (dashboard_feedback,))
+                    conn.commit()
+                    cur.close()
+                    conn.close()
+                    
+                    st.success("Thank you! We've logged your request.")
+                except Exception as e:
+                    st.error(f"Database Error: {e}")
+
+    # -------------------------------------------------------
+    # 👇 This is your existing line (around line 610/613)
     except Exception as file_err:
         st.error(f"Error processing the uploaded file: {file_err}")
     
