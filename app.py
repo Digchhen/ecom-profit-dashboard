@@ -608,28 +608,28 @@ if st.session_state.logged_in:
 # 5. THE LOGIN SCREEN (FALLBACK ACCESS WITH SIGN-UP)
 # ==========================================================
 # [This code sits INSIDE the Dashboard Logic - 8 Spaces Indent]
-        st.markdown("---")
-        st.subheader("💡 Feature Request & Feedback")
-        st.write("See a metric missing? Tell us what to add to this dashboard next.")
-
-        with st.form("dashboard_feedback_form"):
-            dashboard_feedback = st.text_input("Feedback", placeholder="e.g. Add a column for Referrals...")
-            dash_submit = st.form_submit_button("🚀 Submit Feedback")
-
-        if dash_submit and dashboard_feedback:
-            conn = get_db_connection()
-            if conn:
-                try:
-                    cur = conn.cursor()
-                    # Change 'user_feedback' and 'feedback_text' if your DB is different!
-                    query = "INSERT INTO user_feedback (feedback_text) VALUES (%s);"
-                    cur.execute(query, (dashboard_feedback,))
-                    conn.commit()
-                    cur.close()
-                    conn.close()
-                    st.success("Thank you! We've logged your request.")
-                except Exception as e:
-                    st.error(f"Database Error: {e}")
+            st.markdown("---")
+            st.subheader("💡 Feature Request & Feedback")
+            st.write("See a metric missing? Tell us what to add to this dashboard next.")
+    
+            with st.form("dashboard_feedback_form"):
+                dashboard_feedback = st.text_input("Feedback", placeholder="e.g. Add a column for Referrals...")
+                dash_submit = st.form_submit_button("🚀 Submit Feedback")
+    
+            if dash_submit and dashboard_feedback:
+                conn = get_db_connection()
+                if conn:
+                    try:
+                        cur = conn.cursor()
+                        # Change 'user_feedback' and 'feedback_text' if your DB is different!
+                        query = "INSERT INTO user_feedback (feedback_text) VALUES (%s);"
+                        cur.execute(query, (dashboard_feedback,))
+                        conn.commit()
+                        cur.close()
+                        conn.close()
+                        st.success("Thank you! We've logged your request.")
+                    except Exception as e:
+                        st.error(f"Database Error: {e}")
 
     # [This Except Block closes the main file Try loop - 4 Spaces Indent]
     except Exception as file_err:
