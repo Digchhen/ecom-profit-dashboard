@@ -632,8 +632,8 @@ if st.session_state.logged_in:
                         st.error(f"Database Error: {e}")
 
     # [This Except Block closes the main file Try loop - 4 Spaces Indent]
-    except Exception as file_err:
-        st.error(f"Error processing the uploaded file: {file_err}")
+except Exception as file_err:
+    st.error(f"Error processing the uploaded file: {file_err}")
     
 if st.session_state.app_stage == "landing" and uploaded_file is None:
     st.title("🚀 Stop Guessing Your E-commerce Margins")
