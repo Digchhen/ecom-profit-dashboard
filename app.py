@@ -610,7 +610,7 @@ if st.session_state.logged_in:
         except Exception as file_err:
             st.error(f"Error processing the uploaded file: {file_err}")
     
-if st.session_state.app_stage == "landing":
+if st.session_state.app_stage == "landing" and uploaded_file is None:
     st.title("🚀 Stop Guessing Your E-commerce Margins")
     st.subheader("Instantly calculate net profits from your store data logs without linking risky live API endpoints.")
     st.write(" ")
