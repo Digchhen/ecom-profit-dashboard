@@ -610,209 +610,209 @@ if st.session_state.logged_in:
         except Exception as file_err:
             st.error(f"Error processing the uploaded file: {file_err}")
     
-    if st.session_state.app_stage == "landing":
-        st.title("🚀 Stop Guessing Your E-commerce Margins")
-        st.subheader("Instantly calculate net profits from your store data logs without linking risky live API endpoints.")
-        st.write(" ")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("✨ View Live Sandbox (No Sign Up Needed)", use_container_width=True, type="primary"):
-                st.session_state.app_stage = "demo"
-                st.rerun()
-        with col2:
-            if st.button("🔑 Account Member Access Portal / Upload CSV Direct", use_container_width=True):
-                st.session_state.app_stage = "auth"
-                st.rerun()
-
-    elif st.session_state.app_stage == "demo":
-        st.warning("⚡ Currently running in Sandbox Mode using sample row frameworks. Want to run calculations on your real store numbers?")
-        if st.button("👉 Register Private Account & Open File Dropper", type="primary"):
+if st.session_state.app_stage == "landing":
+    st.title("🚀 Stop Guessing Your E-commerce Margins")
+    st.subheader("Instantly calculate net profits from your store data logs without linking risky live API endpoints.")
+    st.write(" ")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("✨ View Live Sandbox (No Sign Up Needed)", use_container_width=True, type="primary"):
+            st.session_state.app_stage = "demo"
+            st.rerun()
+    with col2:
+        if st.button("🔑 Account Member Access Portal / Upload CSV Direct", use_container_width=True):
             st.session_state.app_stage = "auth"
             st.rerun()
-        st.divider()
-        
-       # 1. Generate Sandbox Dataset
-        demo_df = pd.DataFrame({
-            'Transaction_Date': pd.date_range(start='2026-09-01', periods=20),
-            'revenue': [5000 + i*300 for i in range(20)],
-            'spend': [1200 + i*80 for i in range(20)],
-            'cogs': [800 + i*40 for i in range(20)]
-        })
-       # 1. Run the auto-calculation logic right before computing metrics
 
-        # Define calculations helper 1
-        def auto_calculate_gross_revenue(df):
-            if 'Gross_Revenue_Calculated' not in df.columns:
-                if 'revenue' in df.columns:
-                    df['Gross_Revenue_Calculated'] = df['revenue']
-                else:
-                    df['Gross_Revenue_Calculated'] = 0
-            return df
+elif st.session_state.app_stage == "demo":
+    st.warning("⚡ Currently running in Sandbox Mode using sample row frameworks. Want to run calculations on your real store numbers?")
+    if st.button("👉 Register Private Account & Open File Dropper", type="primary"):
+        st.session_state.app_stage = "auth"
+        st.rerun()
+    st.divider()
+    
+   # 1. Generate Sandbox Dataset
+    demo_df = pd.DataFrame({
+        'Transaction_Date': pd.date_range(start='2026-09-01', periods=20),
+        'revenue': [5000 + i*300 for i in range(20)],
+        'spend': [1200 + i*80 for i in range(20)],
+        'cogs': [800 + i*40 for i in range(20)]
+    })
+   # 1. Run the auto-calculation logic right before computing metrics
 
-        # Define calculations helper 2
-        def clean_to_numeric_series(series):
-            """
-            Cleans a pandas series by removing non-numeric characters (like $ or commas)
-            and converting the data into numbers.
-            """
-            import pandas as pd
-            cleaned = pd.to_numeric(series.astype(str).str.replace(r'[^\d.]', '', regex=True), errors='coerce')
-            return cleaned.fillna(0)
+    # Define calculations helper 1
+    def auto_calculate_gross_revenue(df):
+        if 'Gross_Revenue_Calculated' not in df.columns:
+            if 'revenue' in df.columns:
+                df['Gross_Revenue_Calculated'] = df['revenue']
+            else:
+                df['Gross_Revenue_Calculated'] = 0
+        return df
 
-        # 1. Run the auto-calculation logic right before computing metrics
-        demo_df = auto_calculate_gross_revenue(demo_df)
-                
-        # 2. Compute Core Financial Metrics
-        total_rev = float(demo_df['Gross_Revenue_Calculated'].sum())
-        total_ad = float(demo_df['spend'].sum())
-        total_costs = float(demo_df['cogs'].sum())
-                
-        net_profit = total_rev - total_ad - total_costs
-        margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
-        roas = total_rev / total_ad if total_ad > 0.0 else 0.0
-                
-        # 3. Clean and calculate the core sandbox series directly
-        # Fix: Wrapped key names in proper quotes string formatting to match your sandbox columns
-        demo_df['clean_rev_series'] = clean_to_numeric_series(demo_df['revenue'])
-        demo_df['clean_ad_series'] = clean_to_numeric_series(demo_df['spend'])
-                
-        total_rev = float(np.sum(demo_df['clean_rev_series'].to_numpy()))
-        total_ad = float(np.sum(demo_df['clean_ad_series'].to_numpy()))        
-        
-        # Sum up all sandbox preset cost columns directly
-        total_cost_series = pd.Series(0.0, index=demo_df.index)
-        if 'other_costs' in locals() and other_costs:
-            for col in other_costs:
-                if col in demo_df.columns:
-                    total_cost_series += clean_to_numeric_series(demo_df[col])
-                            
-        total_costs = float(np.sum(total_cost_series.to_numpy()))        
-                                             
+    # Define calculations helper 2
+    def clean_to_numeric_series(series):
+        """
+        Cleans a pandas series by removing non-numeric characters (like $ or commas)
+        and converting the data into numbers.
+        """
+        import pandas as pd
+        cleaned = pd.to_numeric(series.astype(str).str.replace(r'[^\d.]', '', regex=True), errors='coerce')
+        return cleaned.fillna(0)
+
+    # 1. Run the auto-calculation logic right before computing metrics
+    demo_df = auto_calculate_gross_revenue(demo_df)
             
-
-        # --- FINAL MATH ---
-        net_profit = total_rev - total_ad - total_costs
-        margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
-        roas = total_rev / total_ad if total_ad > 0.0 else 0.0
-
-
+    # 2. Compute Core Financial Metrics
+    total_rev = float(demo_df['Gross_Revenue_Calculated'].sum())
+    total_ad = float(demo_df['spend'].sum())
+    total_costs = float(demo_df['cogs'].sum())
+            
+    net_profit = total_rev - total_ad - total_costs
+    margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
+    roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+            
+    # 3. Clean and calculate the core sandbox series directly
+    # Fix: Wrapped key names in proper quotes string formatting to match your sandbox columns
+    demo_df['clean_rev_series'] = clean_to_numeric_series(demo_df['revenue'])
+    demo_df['clean_ad_series'] = clean_to_numeric_series(demo_df['spend'])
+            
+    total_rev = float(np.sum(demo_df['clean_rev_series'].to_numpy()))
+    total_ad = float(np.sum(demo_df['clean_ad_series'].to_numpy()))        
+    
+    # Sum up all sandbox preset cost columns directly
+    total_cost_series = pd.Series(0.0, index=demo_df.index)
+    if 'other_costs' in locals() and other_costs:
+        for col in other_costs:
+            if col in demo_df.columns:
+                total_cost_series += clean_to_numeric_series(demo_df[col])
+                        
+    total_costs = float(np.sum(total_cost_series.to_numpy()))        
+                                         
         
-        # 3. Render Key Indicator Metrics Grid
-        st.subheader("🔑 Key Metrics (Sandbox Data)")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Net Profit", f"${net_profit:,.2f}")
-        c2.metric("Profit Margin", f"{margin:.2f}%")
-        c3.metric("ROAS", f"{roas:.2f}x")
-        
-        st.markdown("---")
-        st.subheader("📊 Expense vs Revenue Breakdown")
-        
-        financial_data = {
-            'Category': ['Net Profit', 'Ad Spend', 'Other Costs'],
-            'Amount': [max(0.0, net_profit), total_ad, total_costs]
+
+    # --- FINAL MATH ---
+    net_profit = total_rev - total_ad - total_costs
+    margin = (net_profit / total_rev) * 100.0 if total_rev != 0.0 else 0.0
+    roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+
+
+    
+    # 3. Render Key Indicator Metrics Grid
+    st.subheader("🔑 Key Metrics (Sandbox Data)")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Net Profit", f"${net_profit:,.2f}")
+    c2.metric("Profit Margin", f"{margin:.2f}%")
+    c3.metric("ROAS", f"{roas:.2f}x")
+    
+    st.markdown("---")
+    st.subheader("📊 Expense vs Revenue Breakdown")
+    
+    financial_data = {
+        'Category': ['Net Profit', 'Ad Spend', 'Other Costs'],
+        'Amount': [max(0.0, net_profit), total_ad, total_costs]
+    }
+    
+    profit_color = '#2ec4b6' if net_profit >= 0 else '#e63946'
+    
+    # 4. Generate Interactive Donut Graph Layout
+    fig = px.pie(
+        financial_data, 
+        values='Amount', 
+        names='Category', 
+        hole=0.65,  
+        color='Category',
+        color_discrete_map={
+            'Other Costs': '#4361ee', 
+            'Ad Spend': '#7209b7', 
+            'Net Profit': profit_color
         }
-        
-        profit_color = '#2ec4b6' if net_profit >= 0 else '#e63946'
-        
-        # 4. Generate Interactive Donut Graph Layout
-        fig = px.pie(
-            financial_data, 
-            values='Amount', 
-            names='Category', 
-            hole=0.65,  
-            color='Category',
-            color_discrete_map={
-                'Other Costs': '#4361ee', 
-                'Ad Spend': '#7209b7', 
-                'Net Profit': profit_color
-            }
-        )
-        
-        fig.update_traces(
-            textinfo='label+percent',
-            textposition='outside', 
-            textfont=dict(size=13, family="Arial")
-        )
-        
-        fig.update_layout(
-            showlegend=False,
-            margin=dict(t=30, b=20, l=20, r=20),
-            paper_bgcolor='rgba(0,0,0,0)',  
-            plot_bgcolor='rgba(0,0,0,0)',
-            annotations=[
-                dict(
-                    text=f"<span style='font-size:11px; color:#6c757d;'>NET PROFIT</span><br><b style='font-size:22px; color:{profit_color};'>${net_profit:,.2f}</b>",
-                    x=0.5, y=0.5,
-                    showarrow=False,
-                    align="center"
-                )
-            ]
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        st.write("")
-        if st.button("⬅️ Back to Home"):
-            st.session_state.app_stage = "landing"
-            st.rerun()
+    )
+    
+    fig.update_traces(
+        textinfo='label+percent',
+        textposition='outside', 
+        textfont=dict(size=13, family="Arial")
+    )
+    
+    fig.update_layout(
+        showlegend=False,
+        margin=dict(t=30, b=20, l=20, r=20),
+        paper_bgcolor='rgba(0,0,0,0)',  
+        plot_bgcolor='rgba(0,0,0,0)',
+        annotations=[
+            dict(
+                text=f"<span style='font-size:11px; color:#6c757d;'>NET PROFIT</span><br><b style='font-size:22px; color:{profit_color};'>${net_profit:,.2f}</b>",
+                x=0.5, y=0.5,
+                showarrow=False,
+                align="center"
+            )
+        ]
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    st.write("")
+    if st.button("⬅️ Back to Home"):
+        st.session_state.app_stage = "landing"
+        st.rerun()
 
-    elif st.session_state.app_stage == "auth":
-        col1, col2, col3 = st.columns(3)
-        with col2:
-                    st.write("")
-                    st.markdown("<h2 style='text-align: center;'>🔐 Dashboard Portal</h2>", unsafe_allow_html=True)
-                    
-                    # Creates two clickable tabs for users
-                    auth_tab, signup_tab = st.tabs(["🔒 Sign In", "📝 Create Account"])
-                    
-                    # --- TAB 1: LOG IN ---
-                    with auth_tab:
-                        st.write("Sign in with your credentials to unlock application metrics.")
-                        with st.form("login_form"):
-                            email = st.text_input("Email Address", placeholder="name@example.com")
-                            password = st.text_input("Password", type="password", placeholder="••••••••")
-                            submit = st.form_submit_button("Sign In", use_container_width=True)
-            
-                            if submit:
-                                if email and password:
+elif st.session_state.app_stage == "auth":
+    col1, col2, col3 = st.columns(3)
+    with col2:
+                st.write("")
+                st.markdown("<h2 style='text-align: center;'>🔐 Dashboard Portal</h2>", unsafe_allow_html=True)
+                
+                # Creates two clickable tabs for users
+                auth_tab, signup_tab = st.tabs(["🔒 Sign In", "📝 Create Account"])
+                
+                # --- TAB 1: LOG IN ---
+                with auth_tab:
+                    st.write("Sign in with your credentials to unlock application metrics.")
+                    with st.form("login_form"):
+                        email = st.text_input("Email Address", placeholder="name@example.com")
+                        password = st.text_input("Password", type="password", placeholder="••••••••")
+                        submit = st.form_submit_button("Sign In", use_container_width=True)
+        
+                        if submit:
+                            if email and password:
+                                try:
+                                    response = supabase.auth.sign_in_with_password({
+                                        "email": email.strip(),
+                                        "password": password
+                                    })
+                                    st.session_state.logged_in = True
+                                    st.success("Access Granted! Loading your dashboard...")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Authentication Failed: {e}")
+                            else:
+                                st.warning("Please fill in both fields.")
+        
+                # --- TAB 2: SELF-SERVICE SIGN UP ---
+                with signup_tab:
+                    st.write("Create a new user account to access the system.")
+                    with st.form("signup_form"):
+                        new_email = st.text_input("New Email Address", placeholder="user@example.com")
+                        new_password = st.text_input("Choose Password", type="password", placeholder="Minimum 6 characters")
+                        signup_submit = st.form_submit_button("Register Account", use_container_width=True)
+        
+                        if signup_submit:
+                            if new_email and new_password:
+                                if len(new_password) < 6:
+                                    st.error("❌ Password must be at least 6 characters long.")
+                                else:
                                     try:
-                                        response = supabase.auth.sign_in_with_password({
-                                            "email": email.strip(),
-                                            "password": password
+                                        # Registers the user directly into your Supabase database
+                                        response = supabase.auth.sign_up({
+                                            "email": new_email.strip(),
+                                            "password": new_password
                                         })
-                                        st.session_state.logged_in = True
-                                        st.success("Access Granted! Loading your dashboard...")
-                                        st.rerun()
+                                        st.success("🎉 Account created successfully! You can now switch to the 'Sign In' tab and log in.")
                                     except Exception as e:
-                                        st.error(f"Authentication Failed: {e}")
-                                else:
-                                    st.warning("Please fill in both fields.")
-            
-                    # --- TAB 2: SELF-SERVICE SIGN UP ---
-                    with signup_tab:
-                        st.write("Create a new user account to access the system.")
-                        with st.form("signup_form"):
-                            new_email = st.text_input("New Email Address", placeholder="user@example.com")
-                            new_password = st.text_input("Choose Password", type="password", placeholder="Minimum 6 characters")
-                            signup_submit = st.form_submit_button("Register Account", use_container_width=True)
-            
-                            if signup_submit:
-                                if new_email and new_password:
-                                    if len(new_password) < 6:
-                                        st.error("❌ Password must be at least 6 characters long.")
-                                    else:
-                                        try:
-                                            # Registers the user directly into your Supabase database
-                                            response = supabase.auth.sign_up({
-                                                "email": new_email.strip(),
-                                                "password": new_password
-                                            })
-                                            st.success("🎉 Account created successfully! You can now switch to the 'Sign In' tab and log in.")
-                                        except Exception as e:
-                                            st.error(f"Registration Failed: {e}")
-                                else:
-                                    st.warning("Please fill in both fields.")
-                    st.write("")
+                                        st.error(f"Registration Failed: {e}")
+                            else:
+                                st.warning("Please fill in both fields.")
+                st.write("")
                     if st.button("⬅️ Return to Landing Page", use_container_width=True):
                         st.session_state.app_stage = "landing"
                         st.rerun()       
