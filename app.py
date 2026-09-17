@@ -439,7 +439,7 @@ if st.session_state.logged_in:
                     db_cursor.close()
                     conn.close()
                     st.success("Successfully logged real financial data metrics to Supabase!")
-                except Exception as db_err:
+                    except Exception as db_err:
                     st.warning(f"Could not log file to historical database: {db_err}")
                     
             st.markdown("---")
