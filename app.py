@@ -622,7 +622,7 @@ if st.session_state.logged_in:
                     try:
                         cur = conn.cursor()
                         # Change 'user_feedback' and 'feedback_text' if your DB is different!
-                        query = "INSERT INTO user_feedback (feedback_text) VALUES (%s);"
+                        query = "INSERT INTO user_feedback (user_suggestions) VALUES (%s);"
                         cur.execute(query, (dashboard_feedback,))
                         conn.commit()
                         cur.close()
