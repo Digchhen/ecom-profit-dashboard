@@ -806,7 +806,7 @@ elif st.session_state.app_stage == "auth":
                                         "password": password
                                     })
                                     st.session_state.logged_in = True
-                                    st.success("Access Granted! Loading your dashboard...")
+                                    st.session_state.app_stage = "Dashboard"
                                     st.rerun()
                                 except Exception as e:
                                     st.error(f"Authentication Failed: {e}")
