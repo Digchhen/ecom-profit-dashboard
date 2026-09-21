@@ -422,7 +422,7 @@ if st.session_state.logged_in:
             # Only run break-even targets if the user is actually spending money on ads
             if total_ad > 0.0 and net_rev > 0:
                 # gross profit = net revenue minus operational costs (excludes ads)
-                gross_profit_be = net_rev - total_other_costs
+                gross_profit_be = net_rev - total_costs
                 gross_margin_be = gross_profit_be / net_rev
                 
                 if gross_margin_be > 0:
