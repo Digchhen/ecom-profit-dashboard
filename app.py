@@ -414,6 +414,20 @@ if st.session_state.logged_in:
         
             # 4. ROAS: Fixed to standard marketing standard (Gross Revenue / Ad Spend)
             roas = total_rev / total_ad if total_ad > 0.0 else 0.0
+
+            # # 5. Break-Even ROAS Calculation
+            gross_margin_be = 0.0
+            break_even_roas = 0.0
+            
+            if net_rev > 0:
+                # gross profit = net revenue minus operational costs (excludes ads)
+                gross_profit_be = net_rev - total_costs
+                gross_margin_be = gross_profit_be / net_rev
+            
+            if gross_margin_be > 0:
+                break_even_roas = 1 / gross_margin_be
+            else:
+                break_even_roas = 0.0
             
             st.sidebar.success("✅ All Auto-Mapped Columns Processed and Calculated Successfully!")
 
@@ -422,11 +436,33 @@ if st.session_state.logged_in:
 
             st.markdown("---")
             st.subheader("🔑 Key Metrics")
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Net Profit", f"${net_profit:,.2f}")
-            c2.metric("Profit Margin", f"{margin:.2f}%")
-            c3.metric("ROAS", f"{roas:.2f}x")
-
+            # 1. Expand columns to 4 slots to fit the new metric card
+            c1, c2, c3, c4 = st.columns(4)
+            
+            with c1:
+                st.metric(label="💸 Net Profit", value=f"${net_profit:,.2f}")
+                
+            with c2:
+                st.metric(label="📈 Profit Margin", value=f"{margin:.2f}%")
+                
+            with c3:
+                st.metric(label="📊 Current Blended ROAS", value=f"{roas:.2f}x")
+                
+            with c4:
+                st.metric(
+                    label="🎯 Break-Even ROAS", 
+                    value=f"{break_even_roas:.2f}x" if break_even_roas > 0 else "N/A",
+                    help="The minimum return needed on ad spend just to break even on operational costs."
+                )
+                
+            # 2. Add the dynamic success/error strategy alert banner beneath the metrics
+            if break_even_roas > 0:
+                st.write("") # Add a little padding space
+                if roas >= break_even_roas:
+                    st.success(f"🚀 **Scaling Signal Active:** Your current ROAS ({roas:.2f}x) is comfortably above your Break-Even threshold ({break_even_roas:.2f}x). You can safely scale ad budgets!")
+                else:
+                    st.error(f"⚠️ **Budget Alert:** Your current ROAS ({roas:.2f}x) is below your target Break-Even threshold ({break_even_roas:.2f}x). You are losing money on paid acquisition.")
+                    
             conn = get_db_connection()
             if conn:
                 try:
